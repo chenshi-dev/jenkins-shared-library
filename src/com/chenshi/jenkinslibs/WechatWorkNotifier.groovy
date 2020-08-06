@@ -5,6 +5,7 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 import com.chenshi.jenkinslibs.WechatWorkBot
 
+
 class WechatWorkNotifier {
 
     // https://work.weixin.qq.com/help?doc_id=13376
@@ -22,17 +23,14 @@ class WechatWorkNotifier {
             for (int j = 0; j < entries.length; j++) {
                 def entry = entries[j]
                 def commitUrl = repoBrowser.getChangeSetLink(entry)
-                def log = "${entry.msg} (commit: [${entry.commitId[0..7]}](${commitUrl})) by ${entry.author}"
-                script.println("buildChangeLogs: ${log}")
+                def log = "${entry.msg} (commit: [${entry.commitId[0..7]}](${commitUrl})) by ${entry.author}\n"
                 availableBytesLength -= log.getBytes('UTF-8').size()
-                script.println("buildChangeLogs avalable bytes length: ${availableBytesLength}")
                 if (availableBytesLength < 0) {
                     return changeLogs
                 }
                 changeLogs <<= log
             }
         }
-        script.println("return buildChangeLogs: ${changeLogs}")
 
         return changeLogs.toString()
     }
@@ -54,17 +52,12 @@ class WechatWorkNotifier {
 触发原因：${currentBuild.getBuildCauses()[0].shortDescription}
 """
         int availableBytesLength = wechatMarkdownMessageMaxBytesLength - mainMsg.getBytes('UTF-8').size()
-        script.println("available bytes length: ${availableBytesLength}, ${mainMsg.getBytes('UTF-8').size()}")
-
-
-        println(availableBytesLength)
 
         if (availableBytesLength < 50) {
             return mainMsg
         }
 
         def changeLogs = buildChangeLogs(currentBuild, availableBytesLength)
-        script.println(changeLogs)
         if (changeLogs.size() == 0 ) {
             return mainMsg
         }
@@ -76,7 +69,7 @@ class WechatWorkNotifier {
 
 
     void sendMessage() {
-        def bot = new WechatWorkBot(webhookKey: script.env.QY_WECHAT_BOT_WEBHOOK_KEY, script: script)
+        def bot = new WechatWorkBot(webhookKey: script.env.QY_WECHAT_BOT_WEBHOOK_KEY)
         def message = buildMessage(script.currentBuild)
         bot.doSend(message)
     }

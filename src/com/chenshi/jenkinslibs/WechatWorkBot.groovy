@@ -5,9 +5,7 @@ import groovy.json.JsonOutput
 
 class WechatWorkBot {
     static final WECHATWORKBOTAPI = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key="
-
     String webhookKey
-    def script
 
     void doSend(String message) {
         // refer https://work.weixin.qq.com/help?doc_id=13376
@@ -26,8 +24,6 @@ class WechatWorkBot {
         conn.setRequestProperty("Content-Type", "application/json")
         conn.setDoOutput(true)
         conn.getOutputStream().write(body.getBytes("UTF-8"))
-        conn.connect()
-        script.println(conn.getResponseCode())
-        script.println(conn.getIntputStream().getText())
+        conn.getResponseCode()
     }
 }
