@@ -23,10 +23,10 @@ class WechatWorkNotifier {
             for (int j = 0; j < entries.length; j++) {
                 def entry = entries[j]
                 def commitUrl = repoBrowser.getChangeSetLink(entry)
-                def log = "${entry.msg} (commit: [${entry.commitId[0..7]}](${commitUrl})) by ${entry.author}\n"
+                def log = "> ${entry.msg} (commit [${entry.commitId[0..7]}](${commitUrl})) by ${entry.author}\n"
                 availableBytesLength -= log.getBytes('UTF-8').size()
                 if (availableBytesLength < 0) {
-                    return changeLogs
+                    return changeLogs.toString()
                 }
                 changeLogs <<= log
             }
@@ -40,7 +40,7 @@ class WechatWorkNotifier {
         if (currentBuild.currentResult == "SUCCESS") {
             color = "info"
         } else {
-            color = "warnning"
+            color = "warning"
         }
 
         def startTime = new Date(currentBuild.startTimeInMillis).toString()
